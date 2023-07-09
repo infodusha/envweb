@@ -1,6 +1,6 @@
 {
   "name": "envweb",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Serve environment variables as a javascript",
   "main": "bin/index.js",
   "type": "module",

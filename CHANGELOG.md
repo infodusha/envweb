@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/infodusha/envweb/compare/v1.0.0...v1.0.1) (2023-07-09)
+
+
+### Bug Fixes
+
+* ci fix ([cd4664c](https://github.com/infodusha/envweb/commit/cd4664c1b842cb12f331a7fec85e57fac104c028))
+
 ## 1.0.0 (2023-07-09)
 
 
