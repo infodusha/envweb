@@ -1,0 +1,33 @@
+{
+  "name": "webenv",
+  "version": "1.0.0",
+  "description": "Serve environment variables as a javascript",
+  "main": "bin/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "bin": {
+    "webenv": "bin/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/infodusha/webenv.git"
+  },
+  "keywords": [
+    "env",
+    "dotenv",
+    "web",
+    "serve"
+  ],
+  "files": [
+    "bin/",
+    "lib/",
+    "package.json",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "author": "infodusha",
+  "license": "Apache-2.0"
+}
