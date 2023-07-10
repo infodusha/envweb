@@ -33,12 +33,10 @@ describe('tests',   () => {
             listen: listenMock,
         }));
 
+        process.env = {};
         setArgs();
 
-        async function fakeReadFile() {
-            return `FOO=BAR`;
-        }
-        mock.method(fs, 'readFile', fakeReadFile);
+        mock.method(fs, 'readFile', async () => 'FOO=BAR');
         mock.method(http, 'createServer', fakeCreateServer);
     });
 
@@ -87,6 +85,16 @@ describe('tests',   () => {
 
     it('Throws if TBD values',  async () => {
         mock.method(fs, 'readFile', async () => 'BAZ');
-        await assert.rejects(main, /Value for 'BAZ' should be defined/);
+        await assert.rejects(main, {
+            name: 'Error',
+            message: `Value for 'BAZ' should be defined`,
+        });
+    });
+
+    it('Does not exposes other process values',  async () => {
+        process.env.HI = 'HELLO';
+        setArgs(['-c']);
+        await main();
+        assert.strictEqual(getScript(), `const CONFIG = {"FOO":"BAR"};`);
     });
 });
