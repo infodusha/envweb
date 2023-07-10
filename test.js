@@ -18,7 +18,7 @@ describe('tests',   () => {
         return res;
     }
 
-    function getScript() {
+    function getResponseData() {
         const res = getResponse();
         return res.end.mock.calls[0].arguments[0];
     }
@@ -48,7 +48,7 @@ describe('tests',   () => {
         await assert.doesNotReject(main);
         assert.strictEqual(listenMock.mock.calls[0].arguments[0], '8080'); // Port
         assert.strictEqual(fs.readFile.mock.calls[0].arguments[0], '.env'); // File
-        assert.match(getScript(), /^const CONFIG = \{\n/); // Variable & Window & Compress
+        assert.match(getResponseData(), /^const CONFIG = \{\n/); // Variable & Window & Compress
     });
 
     it('Serves with correct content type',  async () => {
@@ -67,20 +67,20 @@ describe('tests',   () => {
     it('Can do compression',  async () => {
         setArgs(['-c']);
         await main();
-        assert.strictEqual(getScript(), `const CONFIG = {"FOO":"BAR"};`);
+        assert.strictEqual(getResponseData(), `const CONFIG = {"FOO":"BAR"};`);
     });
 
     it('Can set as window',  async () => {
         setArgs(['-w']);
         await main();
-        assert.match(getScript(), /^window\.CONFIG = \{\n/);
+        assert.match(getResponseData(), /^window\.CONFIG = \{\n/);
     });
 
     it('Overrides with process values',  async () => {
         process.env.FOO = 'BAZ';
         setArgs(['-c']);
         await main();
-        assert.strictEqual(getScript(), `const CONFIG = {"FOO":"BAZ"};`);
+        assert.strictEqual(getResponseData(), `const CONFIG = {"FOO":"BAZ"};`);
     });
 
     it('Throws if TBD values',  async () => {
@@ -95,6 +95,37 @@ describe('tests',   () => {
         process.env.HI = 'HELLO';
         setArgs(['-c']);
         await main();
-        assert.strictEqual(getScript(), `const CONFIG = {"FOO":"BAR"};`);
+        assert.strictEqual(getResponseData(), `const CONFIG = {"FOO":"BAR"};`);
+    });
+
+    describe('json mode',   () => {
+        it('Serves json',   async () => {
+            setArgs(['-j', '-c']);
+            await main();
+            assert.strictEqual(getResponseData(), `{"FOO":"BAR"}`);
+        });
+
+        it('Serves with correct content type',   async () => {
+            setArgs(['-j']);
+            await main();
+            assert.strictEqual(getResponse().setHeader.mock.calls[0].arguments[0], 'Content-Type');
+            assert.strictEqual(getResponse().setHeader.mock.calls[0].arguments[1], 'application/json');
+        });
+
+        it('Throws when --window',   async () => {
+            setArgs(['-j', '-w']);
+            await assert.rejects(main, {
+                name: 'Error',
+                message: `Cannot use --json with --window or --variable`,
+            });
+        });
+
+        it('Throws when --variable',   async () => {
+            setArgs(['-j', '-v', 'key']);
+            await assert.rejects(main, {
+                name: 'Error',
+                message: `Cannot use --json with --window or --variable`,
+            });
+        });
     });
 });
